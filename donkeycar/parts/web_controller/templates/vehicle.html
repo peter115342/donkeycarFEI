@@ -1,108 +1,409 @@
 {% extends "base.html" %}
 {% block content %}
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <style>
+    :root {
+      --primary-color: rgb(0, 56, 165);
+      --primary-light: rgba(0, 56, 165, 0.8);
+      --primary-dark: rgb(0, 36, 125);
+      --accent-color: #ff5722;
+      --light-bg: #f8f9fa;
+      --dark-text: #343a40;
+      --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    body {
+      font-family: 'Roboto', 'Segoe UI', Arial, sans-serif;
+      background-color: #f5f7fa;
+      color: var(--dark-text);
+    }
+    
+    .container {
+      max-width: 1200px;
+      padding: 20px;
+    }
+    
+    .control-card {
+      background: white;
+      border-radius: 10px;
+      box-shadow: var(--card-shadow);
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    
+    .control-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 10px;
+    }
+    
+    .control-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--primary-color);
+      margin: 0;
+    }
+    
+    .btn-primary {
+      background-color: var(--primary-color);
+      border-color: var(--primary-color);
+    }
+    
+    .btn-primary:hover {
+      background-color: var(--primary-dark);
+      border-color: var(--primary-dark);
+    }
+    
+    .btn-info {
+      background-color: var(--primary-light);
+      border-color: var(--primary-light);
+    }
+    
+    .btn-info:hover {
+      background-color: var(--primary-color);
+      border-color: var(--primary-color);
+    }
+    
+    .btn-success {
+      background-color: #28a745;
+      border-color: #28a745;
+    }
+    
+    .form-control {
+      border-radius: 5px;
+      border: 1px solid #ddd;
+      padding: 8px 12px;
+    }
+    
+    .thumbnail {
+      border: none;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: var(--card-shadow);
+      margin-bottom: 20px;
+    }
+    
+    #mpeg-image {
+      width: 100%;
+      height: auto;
+      border-radius: 8px;
+    }
+    
+    #control-bars {
+      margin-top: 15px;
+    }
+    
+    /* Single direction bar styling */
+    .progress-container {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    
+    .progress-label {
+      width: 30px;
+      margin-right: 10px;
+      text-align: center;
+    }
+    
+    .bidirectional-bar-container {
+      position: relative;
+      height: 20px;
+      background-color: #e9ecef;
+      border-radius: 5px;
+      flex-grow: 1;
+      overflow: hidden;
+    }
+    
+    .bidirectional-bar-center {
+      position: absolute;
+      left: 50%;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background-color: #aaa;
+      z-index: 2;
+    }
+    
+    .bidirectional-bar {
+      position: absolute;
+      height: 100%;
+      width: 0; /* Will be set by JS */
+      transition: width 0.2s ease;
+    }
+    
+    .bar-left {
+      right: 50%;
+      top: 0;
+    }
+    
+    .bar-right {
+      left: 50%;
+      top: 0;
+    }
+    
+    #angle-bar-backward {
+      background-color: #f0ad4e; /* warning color */
+    }
+    
+    #angle-bar-forward {
+      background-color: #5bc0de; /* info color */
+    }
+    
+    #throttle-bar-backward {
+      background-color: #d9534f; /* danger color */
+    }
+    
+    #throttle-bar-forward {
+      background-color: #5cb85c; /* success color */
+    }
+    
+    #joystick_outer {
+      background-color: rgba(0, 56, 165, 0.1);
+      border-radius: 10px;
+      min-height: 300px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--card-shadow);
+    }
+    
+    #joystick_container {
+      width: 100%;
+      height: 300px;
+      color: var(--primary-color);
+      font-weight: 500;
+    }
+    
+    #button_bar {
+      margin: 15px 0;
+      display: flex;
+      gap: 10px;
+    }
+    
+    #button_bar button {
+      flex: 1;
+      border-radius: 5px;
+    }
+    
+    .mode-select-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+    
+    .mode-select-container select {
+      flex: 2;
+    }
+    
+    .mode-select-container button {
+      flex: 1;
+    }
+    
+    .control-group {
+      margin-bottom: 15px;
+    }
+    
+    .group-label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 600;
+      color: var(--primary-color);
+    }
+    
+    .btn-group {
+      margin-bottom: 15px;
+    }
+    
+    .gamepad-warning {
+      background-color: rgb(255, 243, 224);
+      color: #e65100;
+      padding: 10px;
+      border-radius: 5px;
+      margin-bottom: 15px;
+      text-align: center;
+      font-size: 0.9rem;
+    }
+    
+    #vehicle_footer {
+      background-color: white;
+      border-top: 1px solid #eee;
+      padding: 15px 0;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+    }
+    
+    #brake_button {
+      font-size: 1.2rem;
+      font-weight: 600;
+      padding: 12px;
+      border-radius: 8px;
+    }
+    
+    /* Direction indicators */
+    .direction-indicators {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: #6c757d;
+      margin-top: 2px;
+    }
+    
+    /* Better responsive behavior */
+    @media (max-width: 768px) {
+      .container {
+        padding: 10px;
+      }
+      
+      #joystick-column {
+        margin-bottom: 80px;
+      }
+    }
+  </style>
+
   <div class="container">
     <div class="row">
-
       <div class="col-md-6">
-        <!-- pilot mode/recording -->
-        <form>
-            <label>(M)ode</label>
-            <select id="mode_select" class="form-control"  style="display: inline">
-              <option value="user">(U)ser</option>
-              <option value="local">Full (A)uto</option>
-              <option value="local_angle">Auto (S)teer</option>
-            </select>
-            <button type="button" id="record_button" class="btn btn-info" >
-              Start (R)ecording
-            </button>
-        </form>
+        <!-- Control panel -->
+        <div class="control-card">
+          <div class="control-header">
+            <h3 class="control-title">Control Panel</h3>
+          </div>
+        
+          <!-- Pilot mode/recording -->
+          <form>
+            <div class="mode-select-container">
+              <label for="mode_select"><strong>(M)ode</strong></label>
+              <select id="mode_select" class="form-control">
+                <option value="user">(U)ser</option>
+                <option value="local">Full (A)uto</option>
+                <option value="local_angle">Auto (S)teer</option>
+              </select>
+              <button type="button" id="record_button" class="btn btn-info">
+                Start (R)ecording
+              </button>
+            </div>
+          </form>
 
-        <!-- programmable buttons -->
-        <form id="button_bar">
-          <button type="button" id="w1" class="btn btn-info">1</button>
-          <button type="button" id="w2" class="btn btn-info">2</button>
-          <button type="button" id="w3" class="btn btn-info">3</button>
-          <button type="button" id="w4" class="btn btn-info">4</button>
-          <button type="button" id="w5" class="btn btn-info">5</button>
-        </form>
-
-        <!-- video -->
-        <div class="thumbnail">
-          <img id='mpeg-image', class='img-responsive' src="/video"/> </img>
+          <!-- Programmable buttons -->
+          <form id="button_bar">
+            <button type="button" id="w1" class="btn btn-info">1</button>
+            <button type="button" id="w2" class="btn btn-info">2</button>
+            <button type="button" id="w3" class="btn btn-info">3</button>
+            <button type="button" id="w4" class="btn btn-info">4</button>
+            <button type="button" id="w5" class="btn btn-info">5</button>
+          </form>
         </div>
 
-        <!-- steering/throttle meters -->
-        <div id="control-bars">
-          <div>
-            <span class="glyphicon glyphicon-resize-horizontal pull-left"></span>
-            <div class="progress negative">
-              <div id="angle-bar-backward" class="progress-bar progress-bar-warning pull-right" role="progressbar" style="width: 0%;">
-              </div>
-            </div>
+        <!-- Video feed -->
+        <div class="thumbnail">
+          <img id="mpeg-image" class="img-responsive" src="/video" />
+        </div>
 
-            <div class="progress positive">
-              <div id="angle-bar-forward" class="progress-bar progress-bar-info" role="progressbar" style="width: 0%;">
-              </div>
-            </div>
+        <!-- Steering/throttle meters -->
+        <div class="control-card">
+          <div class="control-header">
+            <h3 class="control-title">Vehicle Telemetry</h3>
           </div>
-
-          <div>
-            <span class="glyphicon glyphicon-resize-vertical pull-left"></span>
-            <div class="progress negative">
-              <div id="throttle-bar-backward" class="progress-bar progress-bar-danger pull-right" role="progressbar" style="width: 0%;">
+          <div id="control-bars">
+            <div class="control-group">
+              <div class="group-label">Steering</div>
+              <div class="progress-container">
+                <div class="progress-label">
+                  <span class="glyphicon glyphicon-resize-horizontal"></span>
+                </div>
+                <div class="bidirectional-bar-container">
+                  <div class="bidirectional-bar-center"></div>
+                  <div id="angle-bar-backward" class="bidirectional-bar bar-left"></div>
+                  <div id="angle-bar-forward" class="bidirectional-bar bar-right"></div>
+                </div>
+              </div>
+              <div class="direction-indicators">
+                <span>Left</span>
+                <span>Right</span>
               </div>
             </div>
 
-            <div class="progress positive">
-              <div id="throttle-bar-forward" class="progress-bar progress-bar-success" role="progressbar" style="width: 0%;">
+            <div class="control-group">
+              <div class="group-label">Throttle</div>
+              <div class="progress-container">
+                <div class="progress-label">
+                  <span class="glyphicon glyphicon-resize-vertical"></span>
+                </div>
+                <div class="bidirectional-bar-container">
+                  <div class="bidirectional-bar-center"></div>
+                  <div id="throttle-bar-backward" class="bidirectional-bar bar-left"></div>
+                  <div id="throttle-bar-forward" class="bidirectional-bar bar-right"></div>
+                </div>
+              </div>
+              <div class="direction-indicators">
+                <span>Reverse</span>
+                <span>Forward</span>
               </div>
             </div>
           </div>
         </div>
       </div> <!-- end video column -->
 
-      <div id="joystick-column"  class="col-md-6">
-        <div style="text-align:center;color:rgb(255, 27, 65);display:inline-block">Note: physical game controller overrides web control.</div>
-        <!-- virtual joystick -->
-        <div id="joystick_outer" class="thumbnail">
-          <div id="joystick_container">
-            <p>Click/touch to use joystick.</p>
+      <div id="joystick-column" class="col-md-6">
+        <div class="control-card">
+          <div class="control-header">
+            <h3 class="control-title">Control Methods</h3>
           </div>
-        </div>
+          
+          <div class="gamepad-warning">
+            <span class="glyphicon glyphicon-info-sign"></span> 
+            Note: physical game controller overrides web control.
+          </div>
+          
+          <!-- Virtual joystick -->
+          <div id="joystick_outer" class="thumbnail">
+            <div id="joystick_container">
+              <p>Click/touch to use joystick.</p>
+            </div>
+          </div>
 
-        <div class="form-inline">
-          <div>
-            <div class="btn-group" data-toggle="buttons">
-              <label class="btn btn-primary" id="joystick-toggle">
-                <input type="radio" name="controlMode" id="joystick" autocomplete="off" value="joystick"> Joystick
-              </label>
-              <label class="btn btn-primary" id="gamepad-toggle">
-                <input type="radio" name="controlMode" id="gamepad" autocomplete="off" value="gamepad"> Gamepad
-              </label>
-              <label class="btn btn-primary" id="tilt-toggle">
-                <input type="radio" name="controlMode" id="tilt" autocomplete="off" value="tilt">Device Tilt
+          <div class="form-inline">
+            <div class="control-group">
+              <div class="group-label">Control Method</div>
+              <div class="btn-group" data-toggle="buttons">
+                <label class="btn btn-primary" id="joystick-toggle">
+                  <input type="radio" name="controlMode" id="joystick" autocomplete="off" value="joystick"> Joystick
+                </label>
+                <label class="btn btn-primary" id="gamepad-toggle">
+                  <input type="radio" name="controlMode" id="gamepad" autocomplete="off" value="gamepad"> Gamepad
+                </label>
+                <label class="btn btn-primary" id="tilt-toggle">
+                  <input type="radio" name="controlMode" id="tilt" autocomplete="off" value="tilt">Device Tilt
+                </label>
+              </div>
+              <label class="group-label" style="display: inline">
+                <a data-toggle="modal" class="btn btn-primary btn-xs" data-target="#aboutControlModes">
+                  <span class="glyphicon glyphicon-info-sign"></span> Help
+                </a>
               </label>
             </div>
-            <label class="group-label" style="display: inline">
-              <a data-toggle="modal" class="btn btn-primary btn-xs" data-target="#aboutControlModes">
-                <span class="glyphicon glyphicon-info-sign"></span>
-              </a>
-            </label>
-          </div>
 
-          <br/>
-          <div>
-            <label class="group-label" style="display: inline">Throttle:</label>
-            <select id="throttle_mode_select" class="form-control" style="display: inline">
-              <option value="user" selected>Maximum</option>
-              <option value="constant">Constant</option>
-            </select>
-            <select id="max_throttle_select" class="form-control" style="display: inline">
-              {% for t in [100, 95, 90, 85, 80, 75, 70, 60, 50, 40, 30, 20, 10] %}
-                <option value="{{ t / 100.0 }}">{{ t }}%</option>
-              {% end %}
-            </select>
+            <div class="control-group">
+              <div class="group-label">Throttle Settings</div>
+              <div class="mode-select-container">
+                <select id="throttle_mode_select" class="form-control">
+                  <option value="user" selected>Maximum</option>
+                  <option value="constant">Constant</option>
+                </select>
+                <select id="max_throttle_select" class="form-control">
+                  {% for t in [100, 95, 90, 85, 80, 75, 70, 60, 50, 40, 30, 20, 10] %}
+                    <option value="{{ t / 100.0 }}">{{ t }}%</option>
+                  {% end %}
+                </select>
+              </div>
+            </div>
           </div>
         </div>
       </div> <!-- end joystick-column -->
@@ -139,23 +440,25 @@
             </ul>
           </p>
           <p>
-            <strong>Gamepad</strong> control is enabled by the <a href="https://developer.mozilla.org/en-US/docs/Web/API/Gamepad_API/Using_the_Gamepad_API">HTML5 gamepad API</a>, currently supported by Chrome and Firefox. Playstation 3 controllers have been confirmed to work.
+            <strong>Gamepad</strong> control is enabled by the <a href="https://developer.mozilla.org/en-US/docs/Web/API/Gamepad_API/Using_the_Gamepad_API">HTML5 gamepad API</a>, currently supported by Chrome and Firefox. Playstation 3 controllers have
+            been confirmed to work.
           </p>
           <p>
-            <strong>Device tilt</strong> control is enabled for devices with <a href="https://developer.mozilla.org/en-US/docs/Web/API/Detecting_device_orientation">device orientation sensors</a>, and should work with most modern smartphones. Hold your device in landscape mode, tilt  forward/backward for throttle and left/right for steering.
+            <strong>Device tilt</strong> control is enabled for devices with <a href="https://developer.mozilla.org/en-US/docs/Web/API/Detecting_device_orientation">device orientation sensors</a>, and should work with most modern smartphones. Hold your device in landscape mode, tilt forward/backward for throttle and left/right for steering.
           </p>
           <p>
             <strong>Pilot Mode</strong> can be toggled or chosen using the keyboard.
             <ul>
               <li>Toggle Pilot <b>M</b>ode: <code>M</code></li> 
               <li><b>U</b>ser Mode: <code>U</code></li> 
-              <li>Auto <b>S</b>teering  Mode: <code>S</code></li> 
+              <li>Auto <b>S</b>teering Mode: <code>S</code></li> 
               <li>Full <b>A</b>uto Mode: <code>A</code></li> 
             </ul>
           </p>
           <p>
             <strong>Recording</strong> can be toggled using the keyboard.
             <ul><li>Toggle <b>R</b>ecording: <code>R</code></li></ul>
+          </p>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
@@ -172,3 +475,4 @@
 </script>
 
 {% end %}
+  
